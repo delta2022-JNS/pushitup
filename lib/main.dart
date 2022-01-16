@@ -1,29 +1,59 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'screens/launch_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/registration_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:social_media_app/components/life_cycle_event_handler.dart';
+import 'package:social_media_app/landing/landing_page.dart';
+import 'package:social_media_app/screens/mainscreen.dart';
+import 'package:social_media_app/services/user_service.dart';
+import 'package:social_media_app/utils/config.dart';
+import 'package:social_media_app/utils/constants.dart';
+import 'package:social_media_app/utils/providers.dart';
 
-void main() => runApp(const PushItUp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Config.initFirebase();
+  runApp(MyApp());
+}
 
-class PushItUp extends StatelessWidget {
-  const PushItUp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(
+      LifecycleEventHandler(
+        detachedCallBack: () => UserService().setUserStatus(false),
+        resumeCallBack: () => UserService().setUserStatus(true),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.dark().copyWith(
-        primaryColor: const Color(0xFF0A0E21),
-        scaffoldBackgroundColor: const Color(0xFF0A0E21),
-        ),
-      initialRoute: LaunchScreen.id,
-      routes: {
-        LaunchScreen.id: (context) => const LaunchScreen(),
-        LoginScreen.id: (context) => const LoginScreen(),
-        RegistrationScreen.id: (context) => const RegistrationScreen(),
-      },
-
+    return MultiProvider(
+      providers: providers,
+      child: Consumer<ThemeNotifier>(
+        builder: (context, ThemeNotifier notifier, child) {
+          return MaterialApp(
+            title: Constants.appName,
+            debugShowCheckedModeBanner: false,
+            theme: notifier.dark ? Constants.darkTheme : Constants.lightTheme,
+            home: StreamBuilder(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+                if (snapshot.hasData) {
+                  return TabScreen();
+                } else
+                  return Landing();
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
-
