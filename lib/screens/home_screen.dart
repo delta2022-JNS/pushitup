@@ -76,7 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
               onPress: () {
                 Navigator.pushNamed(context, LeaderboardScreen.id);
               },
-              cardChild: ,
+              cardChild: Column(
+                children: [
+                  Text('Leaderboard'),
+                  Text('List of names'),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -87,7 +92,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPress: () {
                       Navigator.pushNamed(context, AnalyticsScreen.id);
                     },
-                    cardChild: ,
+                    cardChild: Column(
+                      children: [
+                        Text('Analytics'),
+                        Icon(Icons.analytics),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
@@ -95,7 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPress: () {
                       Navigator.pushNamed(context, GoalsScreen.id);
                     },
-                    cardChild: ,
+                    cardChild: Column(
+                      children: [
+                        Text('Goals'),
+                        Icon(Icons.check_box),
+                      ]
+                    ),
                   ),
                 ),
               ],
